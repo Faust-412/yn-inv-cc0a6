@@ -293,6 +293,17 @@
             background: transparent;
         }
         
+        .tier-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-left: 8px; }
+        .tier-base { background: #fff8e1; color: #c9a227; border: 1px solid #c9a227; }
+        .tier-mini { background: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; }
+        
+        .tier-description {
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
         /* Cards */
         .cards-grid { 
             display: grid; 
@@ -478,7 +489,11 @@
                 <span class="logo-small">YuNur</span>
                 <span class="investor-name" id="dashName">Имя инвестора</span>
             </div>
-            <span class="status-badge status-active" id="statusBadge">Активен</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="status-badge status-active" id="statusBadge">Активен</span>
+                <span class="tier-badge tier-base" id="tierBadge" style="display: none;"></span>
+            </div>
+            <div class="tier-description" id="tierDescription"></div>
             <div class="dagestan-flag-block"></div>
         </div>
         
@@ -598,6 +613,26 @@
             
             const inv = currentInvestor;
             document.getElementById('dashName').textContent = inv.name;
+            
+            // Tier badge и описание
+            const tier = inv.tier || (function() {
+                const totalDeposit = (inv.transactions || [])
+                    .filter(t => t.type === 'deposit' || t.type === 'topup')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                return (totalDeposit >= 500000 && totalDeposit <= 999999) ? 'mini' : 'base';
+            })();
+            const tierBadge = document.getElementById('tierBadge');
+            const tierDescription = document.getElementById('tierDescription');
+            tierBadge.style.display = 'inline-block';
+            if (tier === 'mini') {
+                tierBadge.textContent = 'Мини';
+                tierBadge.className = 'tier-badge tier-mini';
+                tierDescription.textContent = 'ваши деньги работают в сделках с небольшой техникой, срок до 6 мес';
+            } else {
+                tierBadge.textContent = 'База';
+                tierBadge.className = 'tier-badge tier-base';
+                tierDescription.textContent = 'сделки с крупной техникой, срок 3–10 мес';
+            }
             
             // Расчёт метрик
             const metrics = calculateMetrics(inv);
