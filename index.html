@@ -670,14 +670,15 @@
             
             if (inv.transactions) {
                 inv.transactions.forEach(t => {
+                    const amount = Number(t.amount) || 0;
                     if (t.type === 'deposit' || t.type === 'topup') {
-                        onAccount += t.amount;
+                        onAccount += amount;
                     } else if (t.type === 'take_for_product') {
-                        onAccount -= t.amount;
-                        inTurnover += t.amount;
+                        onAccount -= amount;
+                        inTurnover += amount;
                     } else if (t.type === 'income') {
-                        onAccount += t.amount;
-                        accruedIncome += t.amount;
+                        onAccount += amount;
+                        accruedIncome += amount;
                     }
                 });
             }
